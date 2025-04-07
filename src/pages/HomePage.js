@@ -1,12 +1,17 @@
 // === HomePage.js ===
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo, lazy, Suspense } from "react";
 import {
   fetchPopularMovies,
   fetchMovieTrailer,
+  fetchMovieDetails
 } from "../services/movieService";
-import MovieCard from "../components/MovieCard";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { prefetchComponent } from "../utils/prefetchComponent";
+import { preloadMovieDetails } from "../utils/cache";
+
+const MovieCard = lazy(() => import("../components/MovieCard"));
+const MovieDetailsPageImport = () => import("../pages/MovieDetailsPage");
 
 const HomePage = () => {
   const [movies, setMovies] = useState([]);
@@ -36,23 +41,26 @@ const HomePage = () => {
     setDisplayedMovies(filtered);
   }, [movies, searchTerm]);
 
-  const featuredMovie = displayedMovies.length > 0 ? displayedMovies[0] : null;
+  const featuredMovie = useMemo(
+    () => (displayedMovies.length > 0 ? displayedMovies[0] : null),
+    [displayedMovies]
+  );
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     setPage((prev) => prev + 1);
-  };
+  }, []);
 
-  const handleWatchTrailer = async () => {
+  const handleWatchTrailer = useCallback(async () => {
     if (!featuredMovie) return;
     const url = await fetchMovieTrailer(featuredMovie.id);
     setTrailerUrl(url);
     setShowTrailer(true);
-  };
+  }, [featuredMovie]);
 
-  const closeTrailer = () => {
+  const closeTrailer = useCallback(() => {
     setShowTrailer(false);
     setTrailerUrl(null);
-  };
+  }, []);
 
   return (
     <motion.div
@@ -65,7 +73,11 @@ const HomePage = () => {
       {featuredMovie && (
         <motion.div
           className="hero-banner"
-          style={{ backgroundImage: `url(${featuredMovie.poster})` }}
+          style={{
+            backgroundImage: `url(${featuredMovie.poster})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
@@ -97,7 +109,7 @@ const HomePage = () => {
               src={trailerUrl}
               title="YouTube video player"
               frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allow="autoplay; encrypted-media"
               allowFullScreen
             ></iframe>
           </div>
@@ -113,11 +125,21 @@ const HomePage = () => {
       />
 
       <div className="movie-list">
-        {displayedMovies.map((movie) => (
-          <Link to={`/movie/${movie.id}`} key={movie.id} className="movie-link">
-            <MovieCard movie={movie} />
-          </Link>
-        ))}
+        <Suspense fallback={<div>Загрузка карточек...</div>}>
+          {displayedMovies.map((movie) => (
+            <Link
+              to={`/movie/${movie.id}`}
+              key={movie.id}
+              className="movie-link"
+              onMouseEnter={() => {
+                prefetchComponent(MovieDetailsPageImport);
+                preloadMovieDetails(movie.id, fetchMovieDetails);
+              }}
+            >
+              <MovieCard movie={movie} />
+            </Link>
+          ))}
+        </Suspense>
       </div>
 
       {loading && (

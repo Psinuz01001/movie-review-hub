@@ -299,3 +299,64 @@ body {
   cursor: pointer;
   z-index: 10;
 }
+
+.similar-section {
+  margin-top: 60px;
+}
+
+.section-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  padding-left: 10px;
+  color: #e50914;
+}
+
+.genre-select {
+  display: block;
+  margin: 0 auto 30px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  text-align: center;
+  max-width: 300px;
+}
+
+.generated-review {
+  margin: 40px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  font-style: italic;
+  font-size: 1rem;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+.app-loading {
+  position: fixed;
+  z-index: 9999;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  color: white;
+  font-size: 1rem;
+  backdrop-filter: blur(5px);
+}
+
+/* Загрузка меню */
+.app-loading.header {
+  top: 10px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Загрузка страницы */
+.app-loading.content {
+  top: 10px;
+  right: 20px;
+  background: rgba(32, 32, 32, 0.8);
+}

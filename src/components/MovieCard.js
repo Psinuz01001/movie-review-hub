@@ -1,9 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-
-
-const MovieCard = ({ movie }) => {
+const MovieCard = React.memo(({ movie }) => {
   return (
     <motion.div
       className="movie-card"
@@ -15,10 +13,12 @@ const MovieCard = ({ movie }) => {
       <img src={movie.poster} alt={movie.title} className="movie-poster" />
       <div className="movie-info">
         <h3 className="movie-title">{movie.title}</h3>
-        <p className="movie-meta">{movie.genre} • {movie.year}</p>
+        <p className="movie-meta">
+          {movie.genre !== "Неизвестно" ? `${movie.genre} • ${movie.year}` : movie.year}
+        </p>
       </div>
     </motion.div>
   );
-};
+});
 
 export default MovieCard;

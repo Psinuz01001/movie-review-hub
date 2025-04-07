@@ -1,11 +1,14 @@
 // === MovieDetailsPage.js ===
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import MovieCard from "../components/MovieCard";
 import {
   fetchMovieDetails,
   fetchMovieTrailer,
+  fetchSimilarMovies
 } from "../services/movieService";
-
+import { getCachedMovie, cacheMovie, preloadMovieDetails } from "../utils/cache";
+import { motion } from "framer-motion";
 
 const MovieDetailsPage = () => {
   const { id } = useParams();
@@ -14,17 +17,37 @@ const MovieDetailsPage = () => {
   const [trailerUrl, setTrailerUrl] = useState(null);
   const [showTrailer, setShowTrailer] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [similarMovies, setSimilarMovies] = useState([]);
+  const [omdbData, setOmdbData] = useState(null);
 
   useEffect(() => {
-    const loadMovie = async () => {
-      const data = await fetchMovieDetails(id);
-      setMovie(data);
+    const cached = getCachedMovie(id);
+    if (cached) {
+      setMovie(cached);
+    } else {
+      const loadMovie = async () => {
+        const data = await fetchMovieDetails(id);
+        setMovie(data);
+        cacheMovie(id, data);
+      };
+      loadMovie();
+    }
 
-      const saved = JSON.parse(localStorage.getItem("favorites")) || [];
-      setIsFavorite(saved.some((f) => f.id === data.id));
+    const loadExtras = async () => {
+      const similar = await fetchSimilarMovies(id);
+      setSimilarMovies(similar);
+
+      if (movie?.title) {
+        const res = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(movie.title)}&apikey=${process.env.REACT_APP_OMDB_KEY}`);
+        const json = await res.json();
+        if (json && json.Response !== "False") {
+          setOmdbData(json);
+        }
+      }
     };
-    loadMovie();
-  }, [id]);
+
+    loadExtras();
+  }, [id, movie?.title]);
 
   const handleWatchTrailer = async () => {
     const url = await fetchMovieTrailer(id);
@@ -47,7 +70,9 @@ const MovieDetailsPage = () => {
         {
           id: movie.id,
           title: movie.title,
-          poster: `https://image.tmdb.org/t/p/w500${movie.poster_path || movie.backdrop_path}`,
+          poster: movie.poster_path || movie.backdrop_path
+            ? `https://image.tmdb.org/t/p/w500${movie.poster_path || movie.backdrop_path}`
+            : null,
         },
       ];
     }
@@ -59,11 +84,19 @@ const MovieDetailsPage = () => {
   if (!movie) return <div className="movie-details">Загрузка...</div>;
 
   return (
-    <div className="movie-details">
+    <motion.div
+      className="movie-details"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <div
         className="movie-banner"
         style={{
-          backgroundImage: `url(https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path})`,
+          backgroundImage: `url(${movie.backdrop_path || movie.poster_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path}` : null})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          position: "relative"
         }}
       >
         <div className="movie-banner-overlay">
@@ -74,6 +107,16 @@ const MovieDetailsPage = () => {
           </p>
           <p className="movie-release">{movie.release_date}</p>
           <p className="movie-overview">{movie.overview}</p>
+
+          {omdbData && (
+            <div className="omdb-info">
+              <p><strong>IMDb:</strong> {omdbData.imdbRating} / 10</p>
+              <p><strong>Runtime:</strong> {omdbData.Runtime}</p>
+              <p><strong>Actors:</strong> {omdbData.Actors}</p>
+              <p><strong>Country:</strong> {omdbData.Country}</p>
+            </div>
+          )}
+
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
             <button className="hero-button" onClick={handleWatchTrailer}>
               Смотреть трейлер
@@ -106,7 +149,25 @@ const MovieDetailsPage = () => {
           </div>
         </div>
       )}
-    </div>
+
+      {similarMovies.length > 0 && (
+        <div className="similar-section">
+          <h2>Похожие фильмы</h2>
+          <div className="movie-list">
+            {similarMovies.map((movie) => (
+              <Link
+                to={`/movie/${movie.id}`}
+                key={movie.id}
+                className="movie-link"
+                onMouseEnter={() => preloadMovieDetails(movie.id, fetchMovieDetails)}
+              >
+                <MovieCard movie={movie} />
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </motion.div>
   );
 };
 

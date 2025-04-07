@@ -34,12 +34,15 @@ export async function fetchPopularMovies(pages = 3) {
     return [];
   }
 }
+
 export async function fetchMovieTrailer(movieId) {
   const response = await fetch(
     `${BASE_URL}/movie/${movieId}/videos?api_key=${API_KEY}&language=en-US`
   );
   const data = await response.json();
-  const trailer = data.results.find(video => video.type === "Trailer" && video.site === "YouTube");
+  const trailer = data.results.find(
+    (video) => video.type === "Trailer" && video.site === "YouTube"
+  );
   return trailer ? `https://www.youtube.com/embed/${trailer.key}` : null;
 }
 
@@ -50,3 +53,17 @@ export async function fetchMovieDetails(movieId) {
   return await response.json();
 }
 
+export async function fetchSimilarMovies(movieId) {
+  const response = await fetch(
+    `${BASE_URL}/movie/${movieId}/similar?api_key=${API_KEY}&language=en-US&page=1`
+  );
+  const data = await response.json();
+
+  return data.results.slice(0, 10).map((movie) => ({
+    id: movie.id,
+    title: movie.title,
+    poster: `${IMAGE_BASE}${movie.backdrop_path || movie.poster_path}`,
+    genre: "Неизвестно", // Добавлено для поддержки MovieCard
+    year: movie.release_date?.split("-")[0] || "N/A", // Добавлено для поддержки MovieCard
+  }));
+}
