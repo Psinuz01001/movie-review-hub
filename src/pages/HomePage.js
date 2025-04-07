@@ -1,12 +1,12 @@
 // === HomePage.js ===
 import React, { useState, useEffect } from "react";
-import { fetchPopularMovies, fetchMovieTrailer } from "../services/movieService";
+import {
+  fetchPopularMovies,
+  fetchMovieTrailer,
+} from "../services/movieService";
 import MovieCard from "../components/MovieCard";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-
-
-
 
 const HomePage = () => {
   const [movies, setMovies] = useState([]);
@@ -21,7 +21,7 @@ const HomePage = () => {
     const load = async () => {
       setLoading(true);
       const results = await fetchPopularMovies(page);
-      setMovies(prev => [...prev, ...results]);
+      setMovies((prev) => [...prev, ...results]);
       setLoading(false);
     };
     load();
@@ -29,7 +29,7 @@ const HomePage = () => {
 
   useEffect(() => {
     const filtered = searchTerm.trim()
-      ? movies.filter(movie =>
+      ? movies.filter((movie) =>
           movie.title.toLowerCase().includes(searchTerm.toLowerCase())
         )
       : movies;
@@ -39,7 +39,7 @@ const HomePage = () => {
   const featuredMovie = displayedMovies.length > 0 ? displayedMovies[0] : null;
 
   const handleLoadMore = () => {
-    setPage(prev => prev + 1);
+    setPage((prev) => prev + 1);
   };
 
   const handleWatchTrailer = async () => {
@@ -88,7 +88,9 @@ const HomePage = () => {
       {showTrailer && trailerUrl && (
         <div className="trailer-modal">
           <div className="trailer-content">
-            <button className="close-button" onClick={closeTrailer}>×</button>
+            <button className="close-button" onClick={closeTrailer}>
+              ×
+            </button>
             <iframe
               width="100%"
               height="400"
@@ -111,7 +113,7 @@ const HomePage = () => {
       />
 
       <div className="movie-list">
-        {displayedMovies.map(movie => (
+        {displayedMovies.map((movie) => (
           <Link to={`/movie/${movie.id}`} key={movie.id} className="movie-link">
             <MovieCard movie={movie} />
           </Link>
@@ -125,7 +127,7 @@ const HomePage = () => {
       )}
 
       <div style={{ textAlign: "center", marginTop: "30px" }}>
-        <button onClick={handleLoadMore} className="load-more-btn">
+        <button onClick={handleLoadMore} className="hero-button">
           Загрузить ещё
         </button>
       </div>
