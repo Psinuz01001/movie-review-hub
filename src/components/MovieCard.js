@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 
+
+
 const MovieCard = ({ movie }) => {
   return (
     <motion.div

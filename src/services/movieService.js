@@ -42,3 +42,11 @@ export async function fetchMovieTrailer(movieId) {
   const trailer = data.results.find(video => video.type === "Trailer" && video.site === "YouTube");
   return trailer ? `https://www.youtube.com/embed/${trailer.key}` : null;
 }
+
+export async function fetchMovieDetails(movieId) {
+  const response = await fetch(
+    `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=en-US`
+  );
+  return await response.json();
+}
+

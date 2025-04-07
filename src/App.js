@@ -5,7 +5,10 @@ import { AnimatePresence } from "framer-motion";
 import Header from "./components/Header";
 import HomePage from "./pages/HomePage";
 import MovieDetailsPage from "./pages/MovieDetailsPage";
-import { ThemeProvider } from "./context/ThemeContext";
+import FavoritesPage from "./pages/FavoritesPage";
+import './style.css';
+
+
 
 const AppContent = () => {
   const location = useLocation();
@@ -13,6 +16,7 @@ const AppContent = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+        <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/movie/:id" element={<MovieDetailsPage />} />
       </Routes>
@@ -22,12 +26,10 @@ const AppContent = () => {
 
 function App() {
   return (
-    <ThemeProvider>
-      <BrowserRouter>
-        <Header />
-        <AppContent />
-      </BrowserRouter>
-    </ThemeProvider>
+    <BrowserRouter>
+      <Header />
+      <AppContent />
+    </BrowserRouter>
   );
 }
 

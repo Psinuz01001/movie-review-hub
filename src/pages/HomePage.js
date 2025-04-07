@@ -4,7 +4,9 @@ import { fetchPopularMovies, fetchMovieTrailer } from "../services/movieService"
 import MovieCard from "../components/MovieCard";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import "../styles/Spinner.css"; // не забудь создать этот файл с CSS
+
+
+
 
 const HomePage = () => {
   const [movies, setMovies] = useState([]);

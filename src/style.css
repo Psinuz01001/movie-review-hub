@@ -1,0 +1,300 @@
+/* === RESET === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: #141414;
+  color: #ffffff;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* === HEADER === */
+.app-header {
+  background-color: #000;
+  padding: 24px 40px;
+  text-align: center;
+  border-bottom: 1px solid #222;
+  position: relative;
+}
+
+.service-logo {
+  font-size: 2.4rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #e50914, #ff6e30);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+}
+
+.favorites-btn {
+  position: absolute;
+  top: 24px;
+  right: 40px;
+  background-color: transparent;
+  border: 2px solid #e50914;
+  color: #e50914;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.favorites-btn:hover {
+  background-color: #e50914;
+  color: white;
+}
+
+/* === HERO BANNER === */
+.hero-banner {
+  position: relative;
+  height: 450px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 16px;
+  margin: 40px 40px 60px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.hero-overlay {
+  width: 100%;
+  padding: 30px;
+  background: linear-gradient(to top, rgba(20, 20, 20, 0.9), rgba(20, 20, 20, 0));
+  border-radius: inherit;
+}
+
+.hero-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.hero-overview {
+  font-size: 1rem;
+  color: #ccc;
+  margin-bottom: 20px;
+  max-width: 600px;
+}
+
+.hero-button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  border: none;
+  background: #e50914;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.hero-button:hover {
+  background: #b40610;
+}
+
+/* === SEARCH === */
+.search-input {
+  display: block;
+  margin: 40px auto 20px;
+  width: 100%;
+  max-width: 500px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  background-color: #222;
+  color: #fff;
+  text-align: center;
+}
+
+.search-input::placeholder {
+  color: #aaa;
+}
+
+/* === MOVIE GRID === */
+.movie-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 24px;
+  padding: 0 40px 60px;
+}
+
+.movie-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* === MOVIE CARD === */
+.movie-card {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.movie-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+}
+
+.movie-poster {
+  width: 100%;
+  height: 270px;
+  object-fit: cover;
+  border-bottom: 1px solid #333;
+}
+
+.movie-info {
+  padding: 16px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.movie-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.movie-meta {
+  font-size: 0.85rem;
+  color: #bbb;
+}
+
+/* === SPINNER === */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #999;
+  border-top-color: #e50914;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* === MODAL / TRAILER === */
+.trailer-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.trailer-content {
+  position: relative;
+  width: 90%;
+  max-width: 800px;
+  background: #000;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.close-button {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #e50914;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+}
+/* === MOVIE DETAILS PAGE === */
+.movie-details {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.movie-banner {
+  background-size: cover;
+  background-position: center;
+  height: 420px;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.movie-banner-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 30px;
+  background: linear-gradient(to top, rgba(20, 20, 20, 0.9), rgba(20, 20, 20, 0));
+  border-radius: inherit;
+}
+
+.movie-banner-overlay h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.movie-genres,
+.movie-release,
+.movie-overview {
+  font-size: 1rem;
+  color: #ccc;
+  margin-bottom: 12px;
+  max-width: 800px;
+}
+
+.movie-overview {
+  color: #ddd;
+  line-height: 1.6;
+}
+
+/* === Buttons on Movie Page === */
+.movie-details .hero-button {
+  margin-right: 12px;
+  margin-top: 12px;
+}
+
+.card-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 2rem;
+  background: none;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+}

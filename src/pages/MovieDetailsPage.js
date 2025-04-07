@@ -1,71 +1,111 @@
-// src/pages/MovieDetailsPage.js
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+// === MovieDetailsPage.js ===
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  fetchMovieDetails,
+  fetchMovieTrailer,
+} from "../services/movieService";
+
 
 const MovieDetailsPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
-  const [reviews, setReviews] = useState([]);
-  const [newReview, setNewReview] = useState('');
+  const [trailerUrl, setTrailerUrl] = useState(null);
+  const [showTrailer, setShowTrailer] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
-  // Симулируем загрузку данных для конкретного фильма
   useEffect(() => {
-    // В реальном проекте здесь делаем запрос к API, а пока - пример:
-    const sampleMovie = {
-      id: id,
-      title: "Sample Movie",
-      genre: "Drama",
-      year: "2020",
-      poster: "https://via.placeholder.com/150",
-      overview: "Описание фильма..."
+    const loadMovie = async () => {
+      const data = await fetchMovieDetails(id);
+      setMovie(data);
+
+      const saved = JSON.parse(localStorage.getItem("favorites")) || [];
+      setIsFavorite(saved.some((f) => f.id === data.id));
     };
-    setMovie(sampleMovie);
+    loadMovie();
   }, [id]);
 
-  // Функция для добавления отзыва
-  const handleAddReview = () => {
-    if (newReview.trim() === '') return;
-    const review = {
-      id: Date.now(),
-      content: newReview,
-      date: new Date().toLocaleString()
-    };
-    setReviews([...reviews, review]);
-    setNewReview('');
+  const handleWatchTrailer = async () => {
+    const url = await fetchMovieTrailer(id);
+    if (url) {
+      setTrailerUrl(url);
+      setShowTrailer(true);
+    }
   };
 
-  if (!movie) return <p>Loading...</p>;
+  const handleToggleFavorite = () => {
+    const saved = JSON.parse(localStorage.getItem("favorites")) || [];
+    const exists = saved.find((f) => f.id === movie.id);
+
+    let updated;
+    if (exists) {
+      updated = saved.filter((f) => f.id !== movie.id);
+    } else {
+      updated = [
+        ...saved,
+        {
+          id: movie.id,
+          title: movie.title,
+          poster: `https://image.tmdb.org/t/p/w500${movie.poster_path || movie.backdrop_path}`,
+        },
+      ];
+    }
+
+    localStorage.setItem("favorites", JSON.stringify(updated));
+    setIsFavorite(!isFavorite);
+  };
+
+  if (!movie) return <div className="movie-details">Загрузка...</div>;
 
   return (
     <div className="movie-details">
-      <h2>{movie.title}</h2>
-      <img src={movie.poster} alt={`${movie.title} poster`} />
-      <p>{movie.overview}</p>
-      <p><strong>Genre:</strong> {movie.genre}</p>
-      <p><strong>Year:</strong> {movie.year}</p>
+      <div
+        className="movie-banner"
+        style={{
+          backgroundImage: `url(https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path})`,
+        }}
+      >
+        <div className="movie-banner-overlay">
+          <button className="card-close" onClick={() => navigate(-1)}>×</button>
+          <h1>{movie.title}</h1>
+          <p className="movie-genres">
+            {movie.genres?.map((g) => g.name).join(", ")}
+          </p>
+          <p className="movie-release">{movie.release_date}</p>
+          <p className="movie-overview">{movie.overview}</p>
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+            <button className="hero-button" onClick={handleWatchTrailer}>
+              Смотреть трейлер
+            </button>
+            <button className={`hero-button ${isFavorite ? 'remove-fav' : 'add-fav'}`} onClick={handleToggleFavorite}>
+              {isFavorite ? "Удалить из избранного" : "Добавить в избранное"}
+            </button>
+          </div>
+        </div>
+      </div>
 
-      <hr />
-      <h3>Reviews</h3>
-      <div className="reviews">
-        {reviews.length === 0 ? (
-          <p>No reviews yet.</p>
-        ) : (
-          reviews.map(review => (
-            <div key={review.id} className="review">
-              <p>{review.content}</p>
-              <small>{review.date}</small>
-            </div>
-          ))
-        )}
-      </div>
-      <div className="review-form">
-        <textarea
-          placeholder="Write your review..."
-          value={newReview}
-          onChange={(e) => setNewReview(e.target.value)}
-        />
-        <button onClick={handleAddReview}>Add Review</button>
-      </div>
+      {showTrailer && trailerUrl && (
+        <div className="trailer-modal">
+          <div className="trailer-content">
+            <button
+              className="close-button"
+              onClick={() => setShowTrailer(false)}
+            >
+              ×
+            </button>
+            <iframe
+              width="100%"
+              height="400"
+              src={trailerUrl}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
